@@ -1,0 +1,14 @@
+﻿<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %><!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>NrknLib Web Demo</title>
+    <link rel="stylesheet" href="../../Content/Site.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script src="../../Scripts/jConsole.js"></script>
+    <script src="../../Scripts/WebDemo.js"></script>
+  </head>
+  <body>
+    <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+  </body>
+</html>
