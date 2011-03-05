@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions\GridExtensions.cs" />
+    <Compile Include="Extensions\PerlinNoiseExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Interfaces\IGrid.cs" />
     <Compile Include="Interfaces\ILineCollection.cs" />

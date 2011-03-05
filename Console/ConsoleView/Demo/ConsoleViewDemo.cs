@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NrknLib.Geometry;
@@ -28,19 +29,30 @@ namespace NrknLib.ConsoleView.Demo {
       get { return _log.ToString(); }
     }
 
-    private IGrid<double> _noise;
+    private IGrid<byte> _noise;
     private IGrid<bool> _paths;
     private IGrid<bool> _rivers;
     private IGrid<bool> _walls;
     private IGrid<double> _colors;
     private IGrid<char> _trees;
+    private IGrid<bool> _blocks;
+    private IGrid<bool> _fov;
+    private IGrid<bool> _seen;
 
     private Size _viewportSize = new Size( 80, 24 );
-    private readonly Size _gridSize = new Size( 100, 40 );
+    private readonly Size _gridSize = new Size( 750, 750 );
     private Point _location;
     
     private Point Center {
       get { return new Point( _viewportSize.Width / 2, _viewportSize.Height / 2 ); }
+    }
+
+    private Point PlayerLocation
+    {
+      get
+      {
+        return new Point( _location.X + Center.X, _location.Y + Center.Y );
+      }
     }
 
     private IRectangle Viewport {
@@ -54,8 +66,20 @@ namespace NrknLib.ConsoleView.Demo {
       }
     }
 
-    public List<object> Tick( string command ) {
+    public List<object> Tick( string command )
+    {
+      var oldLocation = new Point(_location.X, _location.Y);
       var direction = ExecuteAction( command );
+      if (!_noise.Bounds.InBounds(PlayerLocation) || _blocks[PlayerLocation])
+      {
+        _location = new Point( oldLocation.X, oldLocation.Y );
+        direction = Direction.None;
+      }
+      _fov = _blocks.Fov(10, PlayerLocation);
+      
+      _seen.SetEach( (seen, point ) =>
+        seen || _fov[ point ]
+      );
 
       var source = new Rectangle( _viewportSize );
       var target = new Point( 0, 0 );
@@ -120,7 +144,7 @@ namespace NrknLib.ConsoleView.Demo {
 
     private char GetTile( Point point ) {
       return 
-        !_noise.Bounds.InBounds( point ) ? ' '
+        !_noise.Bounds.InBounds( point ) || !_fov[ point ] && !_seen[ point ] ? ' '
         : _walls[ point ] && _paths[ point ] ? '+'
         : _walls[ point ] ? '#'
         : _paths[ point ] && _rivers[ point ] ? '='
@@ -132,6 +156,7 @@ namespace NrknLib.ConsoleView.Demo {
     private ConsoleColor GetForegroundColor( IPoint p, Point point ) {
       return 
         p.Equals( Center ) || !_noise.Bounds.InBounds( point ) ? ConsoleColor.White
+        : !_fov[ point ] && _seen[ point ] ? ConsoleColor.Gray
         : _walls[ point ] ? ConsoleColor.DarkGray
         : _paths[ point ] && _rivers[ point ] ? ConsoleColor.DarkRed
         : _paths[ point ] ? ConsoleColor.DarkGreen
@@ -140,12 +165,13 @@ namespace NrknLib.ConsoleView.Demo {
         : _colors[ point ] < 0.96 ? ConsoleColor.Yellow
         : _colors[ point ] < 0.97 ? ConsoleColor.DarkRed
         : _colors[ point ] < 0.98 ? ConsoleColor.DarkMagenta
-        : ConsoleColor.DarkCyan;
+        : ConsoleColor.Cyan;
     }
 
     private ConsoleColor GetBackgroundColor( Point point ) {
       return 
-        !_noise.Bounds.InBounds( point ) ? ConsoleColor.Black
+        !_noise.Bounds.InBounds( point ) || !_seen[ point ] ? ConsoleColor.Black
+        : !_fov[ point ] && _seen[ point ] ? ConsoleColor.DarkGray
         : _walls[ point ] ? ConsoleColor.Gray
         : _paths[ point ] && _rivers[ point ] ? ConsoleColor.DarkYellow
         : _paths[ point ] ? ConsoleColor.Green
@@ -167,6 +193,14 @@ namespace NrknLib.ConsoleView.Demo {
         case "39":
           _location.X++;
           return Direction.Right;
+        case "87":
+          goto case "38";
+        case "65":
+          goto case "37";
+        case "68":
+          goto case "39";
+        case "83":
+          goto case "40";
       }
       return Direction.None;
     }
@@ -190,7 +224,12 @@ namespace NrknLib.ConsoleView.Demo {
       var treesStart = DateTime.Now;
       GenerateTrees();
 
+      var blocksStart = DateTime.Now;
+      GenerateBlock();
+
       var end = DateTime.Now;
+
+      _seen = new Grid<bool>(_gridSize);
 
       _log.AppendLine( "Generation time" );
       _log.AppendLine( "  Noise   " + ( pathsStart - noiseStart ).TotalMilliseconds + "ms" );
@@ -198,16 +237,35 @@ namespace NrknLib.ConsoleView.Demo {
       _log.AppendLine( "  Rivers  " + ( wallsStart - riversStart ).TotalMilliseconds + "ms" );
       _log.AppendLine( "  Walls   " + ( colorsStart - wallsStart ).TotalMilliseconds + "ms" );
       _log.AppendLine( "  Colors  " + ( treesStart - colorsStart ).TotalMilliseconds + "ms" );
-      _log.AppendLine( "  Trees   " + ( end - treesStart ).TotalMilliseconds + "ms" );
-      _log.AppendLine( "  " + new String( '-', 20 ) );
+      _log.AppendLine( "  Trees   " + (blocksStart - treesStart).TotalMilliseconds + "ms");
+      _log.AppendLine( "  Blocks  " + (end - blocksStart).TotalMilliseconds + "ms");
+      _log.AppendLine("  " + new String('-', 20));
       _log.AppendLine( "  TOTAL   " + ( end - noiseStart ).TotalMilliseconds + "ms" );
+    }
+
+    private void GenerateBlock()
+    {
+      _blocks = new Grid<bool>(_gridSize);
+      _blocks.SetEach(
+        ( block, point ) =>
+          !_paths[ point ] &&
+          ( _trees[ point ] != '.'
+          || _walls[ point ]
+          || _rivers[ point ] )
+      );
+      var blocks = new Grid<byte>(_gridSize);
+      blocks.SetEach(
+        (value, point) =>
+          (byte)(_blocks[point] ? 0 : 255)
+      );
+      File.WriteAllText( "blocks.pgm", blocks.ToPgm() ); 
     }
 
     private void GenerateTrees() {
       _trees = new Grid<char>( _gridSize );
       _noise.ForEach(
         ( t, p ) =>
-          _trees[ p ] = DoubleToForestItem( t )
+          _trees[ p ] = DoubleToForestItem( t / 255.0 )
       );
     }
 
@@ -259,7 +317,7 @@ namespace NrknLib.ConsoleView.Demo {
 
       var line1 = new Line( new Point( 1, 1 ), new Point( _gridSize.Width - 1, _gridSize.Height - 1 ) );
       var line2 = new Line( new Point( 1, _gridSize.Height - 1 ), new Point( _gridSize.Width - 1, 1 ) );
-      var line3 = new Line( new Point( 1, 1 ), _location );
+      var line3 = new Line( new Point( 1, 1 ), Center );
 
       var lines = new[] { line1, line2, line3 };
       var points = lines.SelectMany( line => line.DrunkenWalk( 0.5, _noise.Bounds ) ).Distinct();
@@ -270,7 +328,8 @@ namespace NrknLib.ConsoleView.Demo {
     }
 
     private void GenerateNoise() {
-      _noise = new Grid<double>( _gridSize ).NoiseFill( 5, true );
+      _noise = new Grid<byte>(_gridSize).Generate(0.0525, 1.0, 0.75, 5);
+      File.WriteAllText( "noise.pgm", _noise.ToPgm());
     }
 
     static char DoubleToForestItem( double value ) {

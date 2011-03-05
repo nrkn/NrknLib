@@ -4,7 +4,8 @@ using NrknLib.ConsoleView.Demo;
 
 namespace ConsoleDemo {
   class Program {
-    static void Main( string[] args ) {
+    static void Main( string[] args )
+    {
       var console = new SystemConsoleView();
       //.NET Console.MoveBufferArea is too slow for the buffering to be useful.
       //it's actually faster to just update the whole screen
