@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NrknLib.Geometry.Interfaces;
 
 namespace NrknLib.Geometry {
+  [Serializable]
   public struct Line : ILine {
     public Line( IPoint start, IPoint end ) : this() {
       Start = start;

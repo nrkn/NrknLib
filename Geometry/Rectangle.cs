@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NrknLib.Geometry.Interfaces;
 
 namespace NrknLib.Geometry {
+  [Serializable]
   public struct Rectangle : IRectangle {
     public Rectangle( int top, int right, int bottom, int left ) : this() {
       Top = top;

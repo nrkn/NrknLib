@@ -11,6 +11,7 @@ namespace NrknLib.Geometry {
   /// A 2D grid of T
   /// </summary>
   /// <typeparam name="T">Anything</typeparam>
+  [Serializable]
   public class Grid<T> : IGrid<T> {
     /// <summary>
     /// Grid constructor
