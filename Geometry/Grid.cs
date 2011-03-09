@@ -248,6 +248,26 @@ namespace NrknLib.Geometry {
       }
     }
 
+    public IEnumerable<IEnumerable<T>> Rows {
+      get {
+        return Cells.Partitions( Width );
+      }
+    }
+
+    public IEnumerable<IEnumerable<T>> Columns {
+      get {
+        var columns = new List<List<T>>();
+        for( var x = 0; x < Width; x++ ) {
+          var column = new List<T>();
+          for( var y = 0; y < Height; y++ ) {
+            column.Add( this[ x, y ] );
+          }
+          columns.Add( column );
+        }
+        return columns;
+      }
+    }
+
     /// <summary>
     /// Gets or sets a cell
     /// </summary>

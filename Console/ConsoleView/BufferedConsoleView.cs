@@ -143,7 +143,7 @@ namespace NrknLib.ConsoleView {
       }
     }
 
-    protected string _foregroundColor;
+    protected dynamic _foregroundColor;
     public dynamic ForegroundColor {
       get {
         return _foregroundColor;
@@ -162,7 +162,7 @@ namespace NrknLib.ConsoleView {
 
     public Action<dynamic> OnSetForegroundColor { get; protected set; }
 
-    protected string _backgroundColor;
+    protected dynamic _backgroundColor;
     public dynamic BackgroundColor {
       get {
         return _backgroundColor;

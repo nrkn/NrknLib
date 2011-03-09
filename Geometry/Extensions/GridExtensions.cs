@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NrknLib.Color;
 using NrknLib.Geometry.Interfaces;
 using NrknLib.Utilities;
 using NrknLib.Utilities.Extensions;
@@ -160,6 +161,24 @@ namespace NrknLib.Geometry.Extensions {
       {
         builder.Append(Math.Floor(grid[cell.X, cell.Y] * 255));
         if (cell.X == grid.Width - 1) builder.AppendLine();
+        else builder.Append(" ");
+      });
+
+      return builder.ToString();
+    }
+
+    public static string ToPpm( this IGrid<Rgba> grid ) {
+      var builder = new StringBuilder();
+      builder.AppendLine("P3");
+      builder.AppendLine(String.Format("{0} {1}", grid.Width, grid.Height));
+      builder.AppendLine("255");
+
+      grid.ForEach(cell =>
+      {
+        builder.Append( grid[ cell.X, cell.Y ].Red + " " );
+        builder.Append( grid[ cell.X, cell.Y ].Green + " ");
+        builder.Append( grid[ cell.X, cell.Y ].Blue );
+        if( cell.X == grid.Width - 1 ) builder.AppendLine();
         else builder.Append(" ");
       });
 

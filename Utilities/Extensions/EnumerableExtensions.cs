@@ -4,10 +4,13 @@ using System.Linq;
 
 namespace NrknLib.Utilities.Extensions {
   public static class EnumerableExtensions {
-    public static IEnumerable<Tuple<T, T>> Pairs<T>( this IEnumerable<T> values ) {
+    public static IEnumerable<Tuple<T, T>> Pairs<T>( this IEnumerable<T> values, bool wrap = false ) {
       var pairs = new List<Tuple<T, T>>();
       for( var i = 0; i < values.Count() - 1; i++ ) {
         pairs.Add( new Tuple<T, T>( values.ToList()[ i ], values.ToList()[ i + 1 ] ) );
+      }
+      if( wrap ) {
+        pairs.Add( new Tuple<T, T>( values.Last(), values.First() ) );
       }
       return pairs; 
     }

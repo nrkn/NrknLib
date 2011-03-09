@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NrknLib.ConsoleView.ColorConverters {
   public static class ConsoleToHtmlColorConverter {
     static ConsoleToHtmlColorConverter() {
-      Conversions = new Dictionary<dynamic, dynamic> {
+      Conversions = new Dictionary<ConsoleColor, string> {
         {ConsoleColor.Black, "#000"}, 
         {ConsoleColor.DarkBlue, "#008"}, 
         {ConsoleColor.DarkGreen, "#080"}, 
@@ -22,10 +22,11 @@ namespace NrknLib.ConsoleView.ColorConverters {
         {ConsoleColor.Yellow, "#ff0"}, 
         {ConsoleColor.White, "#fff"}
       };
+
       FormatColor = color => Conversions[ color ];
     }
 
-    public static IDictionary<dynamic, dynamic> Conversions { get; set; }
+    public static IDictionary<ConsoleColor, string> Conversions { get; set; }
     public static Func<dynamic, dynamic> FormatColor { get; set; }
   }
 }
