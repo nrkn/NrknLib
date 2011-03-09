@@ -90,30 +90,23 @@ namespace NrknLib.Color.Extensions {
     }
 
     public static Rgba ToRgba( this Hsla hsla ) {
-      double v;
-      double r, g, b;
       var h = hsla.Hue;
-      var sl = hsla.Saturation;
+      var s = hsla.Saturation;
       var l = hsla.Lightness;
 
-      r = l;   // default to gray
-      g = l;
-      b = l;
-      v = ( l <= 0.5 ) ? ( l * ( 1.0 + sl ) ) : ( l + sl - l * sl );
+      var r = l;
+      var g = l;
+      var b = l;
+      var v = ( l <= 0.5 ) ? ( l * ( 1.0 + s ) ) : ( l + s - l * s );
       if( v > 0 ) {
-        double m;
-        double sv;
-        int sextant;
-        double fract, vsf, mid1, mid2;
-
-        m = l + l - v;
-        sv = ( v - m ) / v;
+        var m = l + l - v;
+        var sv = ( v - m ) / v;
         h *= 6.0;
-        sextant = (int) h;
-        fract = h - sextant;
-        vsf = v * sv * fract;
-        mid1 = m + vsf;
-        mid2 = v - vsf;
+        var sextant = (int) h;
+        var fract = h - sextant;
+        var vsf = v * sv * fract;
+        var mid1 = m + vsf;
+        var mid2 = v - vsf;
         switch( sextant ) {
           case 0:
             r = v;
@@ -200,16 +193,6 @@ namespace NrknLib.Color.Extensions {
         h = ( r == min ? 3.0 + g2 : 5.0 - r2 );
       }
       h /= 6.0;
-      //var h = min == max ? 0
-      //  : r == max ? ( g - b ) / ( max - min )
-      //  : g == max ? 2.0 + ( b - r ) / ( max - min )
-      //  : 4.0 + ( r - g ) / ( max - min );
-
-      
-
-      //var s = min == max ? 0 
-      //  : l < 0.5 ? ( max - min ) / ( max + min ) 
-      //  : ( max - min ) / ( 2.0 - max - min );
 
       return new Hsla {Hue = h, Saturation = s, Lightness = l, Alpha = a};
     }
