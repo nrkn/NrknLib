@@ -26,5 +26,7 @@ namespace NrknLib.Geometry.Interfaces {
     IGrid<T> Copy( IRectangle rectangle );
     void Paste( IGrid<T> grid, IPoint location );
     IEnumerable<T> Cells { get; set; }
+    int LeftmostWhere( IPoint start, Func<T, bool> predicate );
+    int RightmostWhere( IPoint start, Func<T, bool> predicate );
   }
 }

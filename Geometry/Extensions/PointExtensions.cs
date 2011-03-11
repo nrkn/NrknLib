@@ -36,5 +36,14 @@ namespace NrknLib.Geometry.Extensions {
     public static IEnumerable<IPoint> Translate( this IEnumerable<IPoint> points, IPoint amount ) {
       return points.Select( point => point.Translate( amount ) );
     }    
+
+    public static IEnumerable<IPoint> Neighbours( this IPoint point ) {
+      return new IPoint[] {
+        new Point( point.X, point.Y - 1 ),
+        new Point( point.X, point.Y + 1 ),
+        new Point( point.X - 1, point.Y ),
+        new Point( point.X + 1, point.Y )
+      };
+    }
   }
 }

@@ -41,9 +41,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="FloodFiller\FloodFillExtensions.cs" />
     <Compile Include="Extensions\GridExtensions.cs" />
     <Compile Include="Extensions\PerlinNoiseExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
+    <Compile Include="FloodFiller\FloodFillRange.cs" />
+    <Compile Include="FloodFiller\FloodFillRangeQueue.cs" />
+    <Compile Include="FloodFiller\QueueLinearFloodFiller.cs" />
     <Compile Include="Interfaces\IGrid.cs" />
     <Compile Include="Interfaces\ILineCollection.cs" />
     <Compile Include="Interfaces\IPointCollection.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NrknLib.Color;
+using NrknLib.Geometry.FloodFiller;
 using NrknLib.Geometry.Interfaces;
 using NrknLib.Utilities;
 using NrknLib.Utilities.Extensions;
@@ -202,6 +203,20 @@ namespace NrknLib.Geometry.Extensions {
       return builder.ToString();
     }
 
+    public static string ToPbm( this IGrid<bool> grid ) {
+      var builder = new StringBuilder();
+      builder.AppendLine( "P1" );
+      builder.AppendLine( String.Format( "{0} {1}", grid.Width, grid.Height ) );
+
+      grid.ForEach( cell => {
+        builder.Append( grid[ cell.X, cell.Y ] ? "1" : "0" );
+        if( cell.X == grid.Width - 1 ) builder.AppendLine();
+        else builder.Append( " " );
+      } );
+
+      return builder.ToString();      
+    }
+
     public static IGrid<double> NoiseFill( this IGrid<double> grid, int levels, bool normalize = false ) {
       var grids = new List<Grid<double>>();
 
@@ -261,6 +276,12 @@ namespace NrknLib.Geometry.Extensions {
       }
 
       return noiseFilled;
+    }
+
+    public static HashSet<IPoint> FloodFill( this IGrid<bool> blocks, IPoint start ) {
+      var queueLinearFloodFiller = new QueueLinearFloodFiller( blocks );
+      queueLinearFloodFiller.FloodFill( start );
+      return queueLinearFloodFiller.Flooded;
     }
 
     public static IGrid<bool> Fov( this IGrid<bool> blocks, int radius, IPoint from )

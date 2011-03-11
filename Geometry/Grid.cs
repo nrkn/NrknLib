@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using NrknLib.Geometry.Extensions;
@@ -93,6 +94,8 @@ namespace NrknLib.Geometry {
           _grid[ y ].Add( default( T ) );
         }
       }
+      InitializeCells();
+      InitializeColumns();
     }
 
     private readonly int _width;
@@ -129,8 +132,12 @@ namespace NrknLib.Geometry {
     }
 
     public T this[ IPoint point ] {
-      get { return this[ point.X, point.Y ]; }
-      set { this[ point.X, point.Y ] = value; }
+      get {
+        return this[ point.X, point.Y ];
+      }
+      set {
+        this[ point.X, point.Y ] = value;
+      }
     }
 
     public void ForEach( Action<IPoint> action ) {
@@ -152,7 +159,7 @@ namespace NrknLib.Geometry {
     public void SetEach( Func<T> func ) {
       for( var y = 0; y < Height; y++ ) {
         for( var x = 0; x < Width; x++ ) {
-          _grid[ y ][ x ] = func();
+          this[ x, y ] = func();
         }
       }
     }
@@ -164,7 +171,7 @@ namespace NrknLib.Geometry {
     public void SetEach( Func<T, T> func ) {
       for( var y = 0; y < Height; y++ ) {
         for( var x = 0; x < Width; x++ ) {
-          _grid[ y ][ x ] = func( _grid[ y ][ x ] );
+          this[ x, y ] = func( _grid[ y ][ x ] );
         }
       }
     }
@@ -176,7 +183,7 @@ namespace NrknLib.Geometry {
     public void SetEach( Func<T, int, int, T> func ) {
       for( var y = 0; y < Height; y++ ) {
         for( var x = 0; x < Width; x++ ) {
-          _grid[ y ][ x ] = func( _grid[ y ][ x ], x, y );
+          this[ x, y ] = func( _grid[ y ][ x ], x, y );
         }
       }
     }
@@ -188,7 +195,7 @@ namespace NrknLib.Geometry {
     public void SetEach( Func<T, IPoint, T> func ) {
       for( var y = 0; y < Height; y++ ) {
         for( var x = 0; x < Width; x++ ) {
-          _grid[ y ][ x ] = func( _grid[ y ][ x ], new Point( x, y ) );
+          this[ x, y ] = func( _grid[ y ][ x ], new Point( x, y ) );
         }
       }
     }
@@ -236,11 +243,14 @@ namespace NrknLib.Geometry {
     /// <summary>
     /// The grid cells. If you pass too many cells it will ignore the extra ones. If you pass too few it will fill the grid out with default( T )
     /// </summary>
+
+    private List<T> _cells;
     public IEnumerable<T> Cells {
       get {
-        var cells = new List<T>();
-        ForEach( cells.Add );
-        return cells;
+        if( _cells == null ){
+          InitializeCells();
+        }
+        return _cells.AsReadOnly();
       }
       set {
         var stack = new Stack<T>( value.Reverse() );
@@ -248,24 +258,59 @@ namespace NrknLib.Geometry {
       }
     }
 
+    private void InitializeCells() {
+      var cells = new List<T>();
+      foreach( var row in _grid ) {
+        cells.AddRange( row );
+      }
+      _cells = cells;
+    }
+
     public IEnumerable<IEnumerable<T>> Rows {
       get {
-        return Cells.Partitions( Width );
+        return _grid.AsReadOnly();
       }
     }
 
+    private List<List<T>> _columns;
     public IEnumerable<IEnumerable<T>> Columns {
       get {
-        var columns = new List<List<T>>();
-        for( var x = 0; x < Width; x++ ) {
-          var column = new List<T>();
-          for( var y = 0; y < Height; y++ ) {
-            column.Add( this[ x, y ] );
-          }
-          columns.Add( column );
+        if( _columns == null ) {
+          InitializeColumns();
         }
-        return columns;
+        return _columns.AsReadOnly();
       }
+    }
+
+    public int LeftmostWhere( IPoint start, Func<T, bool> predicate ) {
+      if( !Bounds.InBounds( start )) throw new ArgumentException( "Out of bounds", "start" );
+      var x = start.X;
+      while( Bounds.InBounds( new Point( x, start.Y ) ) && predicate( this[ x, start.Y ] ) ) {
+        x--;
+      }
+      return x + 1;
+    }
+
+    public int RightmostWhere( IPoint start, Func<T, bool> predicate ) {
+      if( !Bounds.InBounds( start ) ) throw new ArgumentException( "Out of bounds", "start" );
+      var x = start.X;
+      while( Bounds.InBounds( new Point( x, start.Y ) ) && predicate( this[ x, start.Y ] ) ) {
+        x++;
+      }
+      return x - 1;
+    }
+
+
+    private void InitializeColumns() {
+      var columns = new List<List<T>>();
+      for( var x = 0; x < Width; x++ ) {
+        var column = new List<T>();
+        for( var y = 0; y < Height; y++ ) {
+          column.Add( this[ x, y ] );
+        }
+        columns.Add( column );
+      }
+      _columns = columns;
     }
 
     /// <summary>
@@ -280,6 +325,8 @@ namespace NrknLib.Geometry {
       }
       set {
         _grid[ y ][ x ] = value;
+        _cells[ Width * y + x ] = value;
+        _columns[ x ][ y ] = value;
       }
     }
   }
