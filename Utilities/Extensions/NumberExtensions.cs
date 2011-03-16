@@ -10,12 +10,11 @@ namespace NrknLib.Utilities.Extensions {
       return start < end ? 1 : end < start ? -1 : 0;
     }
 
-    public static double Clamp( this double x, double min, double max ) {
-      return x < min ? min : x > max ? max : x;
-    }
-
-    public static double Clamp( this int x, int min, int max ) {
-      return x < min ? min : x > max ? max : x;
+    public static T Clamp<T>( this T value, T minimum, T maximum ) where T : struct, IComparable<T> {
+      if( value.CompareTo( minimum ) < 0 ) {
+        return minimum;
+      }
+      return value.CompareTo( maximum ) > 0 ? maximum : value;      
     }
 
     public static double ToRadians( this double degrees ) {

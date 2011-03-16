@@ -5,8 +5,18 @@ using NrknLib.Utilities.Extensions;
 
 namespace NrknLib.Color.Extensions {
   public static class ColorExtensions {
-    //TODO currently it discards alpha
-    public static string ToHtml( this Rgba rgba ) {
+    public static string ToHtml( this Rgba rgba, bool useAlpha = false ) {
+      if( useAlpha ) {
+        return "rgba( {red}, {green}, {blue}, {alpha} )".Inject( 
+          new {
+            red = rgba.Red,
+            blue = rgba.Blue,
+            green = rgba.Green,
+            alpha = 1.0 / rgba.Alpha
+          } 
+        );
+      }
+
       var htmlColor = "#" + rgba.Red.ToString( "X2" ) + rgba.Green.ToString( "X2" ) + rgba.Blue.ToString( "X2" );
 
       var r = htmlColor.Substring( 1, 2 );
@@ -22,12 +32,12 @@ namespace NrknLib.Color.Extensions {
 
     public static Rgba ToRgba( this string htmlColor ) {
       htmlColor = htmlColor.NormalizeHexColor();
-      
-      var r = Convert.ToByte( htmlColor.Substring( 1, 2 ), 16 );
-      var g = Convert.ToByte( htmlColor.Substring( 3, 2 ), 16 );
-      var b = Convert.ToByte( htmlColor.Substring( 5, 2 ), 16 );
 
-      return new Rgba( r, g, b );
+      return new Rgba{
+        Red = Convert.ToByte( htmlColor.Substring( 1, 2 ), 16 ),
+        Green = Convert.ToByte( htmlColor.Substring( 3, 2 ), 16 ),
+        Blue = Convert.ToByte( htmlColor.Substring( 5, 2 ), 16 )        
+      };
     }
 
     public static string NormalizeHexColor( this string hexColor ) {
@@ -98,6 +108,7 @@ namespace NrknLib.Color.Extensions {
       var g = l;
       var b = l;
       var v = ( l <= 0.5 ) ? ( l * ( 1.0 + s ) ) : ( l + s - l * s );
+      
       if( v > 0 ) {
         var m = l + l - v;
         var sv = ( v - m ) / v;
@@ -107,6 +118,7 @@ namespace NrknLib.Color.Extensions {
         var vsf = v * sv * fract;
         var mid1 = m + vsf;
         var mid2 = v - vsf;
+        
         switch( sextant ) {
           case 0:
             r = v;
@@ -140,12 +152,13 @@ namespace NrknLib.Color.Extensions {
             break;
         }
       }
-      Rgba rgba;
-      rgba.Red = Convert.ToByte( r * 255.0f );
-      rgba.Green = Convert.ToByte( g * 255.0f );
-      rgba.Blue = Convert.ToByte( b * 255.0f );
-      rgba.Alpha = Convert.ToByte( hsla.Alpha * 255 );
-      return rgba;
+      
+      return new Rgba {
+        Red = Convert.ToByte( r * 255.0f ),
+        Green = Convert.ToByte( g * 255.0f ),
+        Blue = Convert.ToByte( b * 255.0f ),
+        Alpha = Convert.ToByte( hsla.Alpha * 255 )
+      };
     }
 
     public static Rgba Average( this Rgba rgba, Rgba rgba2, double weight = 1 ) {
@@ -154,7 +167,12 @@ namespace NrknLib.Color.Extensions {
       var b = ( ( rgba.Blue * weight ) + rgba2.Blue ) / ( 1 + weight );
       var a = ( ( rgba.Alpha * weight ) + rgba2.Alpha ) / ( 1 + weight );
 
-      return new Rgba( (byte) r.Clamp( 0, 255 ), (byte) g.Clamp( 0, 255 ), (byte) b.Clamp( 0, 255 ), (byte) a.Clamp( 0, 255 ) );
+      return new Rgba{
+        Red = (byte) r.Clamp( 0, 255 ), 
+        Green = (byte) g.Clamp( 0, 255 ), 
+        Blue = (byte) b.Clamp( 0, 255 ), 
+        Alpha = (byte) a.Clamp( 0, 255 )
+      };
     }
 
     public static Hsla ToHsla( this Rgba color ) {
@@ -167,7 +185,13 @@ namespace NrknLib.Color.Extensions {
       var min = rgb.Min();
       var max = rgb.Max();
       var maxLessMin = max - min;
-      var hsla = new Hsla {Hue = 0, Saturation = 0, Lightness = 0, Alpha = a};
+      
+      var hsla = new Hsla {
+        Hue = 0, 
+        Saturation = 0, 
+        Lightness = 0, 
+        Alpha = a
+      };
 
       var l = ( max + min ) / 2.0;
 
@@ -194,7 +218,12 @@ namespace NrknLib.Color.Extensions {
       }
       h /= 6.0;
 
-      return new Hsla {Hue = h, Saturation = s, Lightness = l, Alpha = a};
+      return new Hsla {
+        Hue = h, 
+        Saturation = s, 
+        Lightness = l, 
+        Alpha = a
+      };
     }
   }
 }

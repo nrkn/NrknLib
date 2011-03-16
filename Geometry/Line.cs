@@ -34,7 +34,7 @@ namespace NrknLib.Geometry {
 
     public int X2 {
       get { return End.X; }
-      set { throw new NotImplementedException(); }
+      set { End.X = value; }
     }
 
     public int Y1 {

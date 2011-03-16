@@ -43,14 +43,13 @@ namespace NrknLib.Utilities.Extensions {
       return values.Select( x => ( x - min ) * ratio );
     }
 
-
     public static IEnumerable<byte> Normalize(this IEnumerable<byte> values)
     {
       var min = values.Min();
       var max = values.Max();
       var range = max - min;
       var ratio = 255 / range;
-      return values.Select(x => (byte)( (x - min) * ratio ).Clamp(0,255));
+      return values.Select( x => (byte)( (x - min) * ratio ).Clamp( 0, 255 ) );
     }
   }
 }

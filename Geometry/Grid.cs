@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using NrknLib.Geometry.Extensions;
 using NrknLib.Geometry.Interfaces;
 using NrknLib.Utilities.Extensions;
 
@@ -18,10 +16,8 @@ namespace NrknLib.Geometry {
     /// Grid constructor
     /// </summary>
     /// <param name="size">The size of the grid</param>
-    public Grid( ISize size )
-      : this( size.Width, size.Height ) {
+    public Grid( ISize size ) : this( size.Width, size.Height ) {}
 
-    }
     /// <summary>
     /// Grid constructor
     /// </summary>
@@ -103,6 +99,7 @@ namespace NrknLib.Geometry {
     private readonly List<List<T>> _grid;
 
     public override string ToString() {      
+      //just a nicety for easy debugging of Grid<double>
       if( typeof( T ) == typeof( double ) ) {
         return ToString( cell => {
           dynamic t = cell;
@@ -243,7 +240,6 @@ namespace NrknLib.Geometry {
     /// <summary>
     /// The grid cells. If you pass too many cells it will ignore the extra ones. If you pass too few it will fill the grid out with default( T )
     /// </summary>
-
     private List<T> _cells;
     public IEnumerable<T> Cells {
       get {

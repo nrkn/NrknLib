@@ -41,7 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
-    <Compile Include="FloodFiller\FloodFillExtensions.cs" />
     <Compile Include="Extensions\GridExtensions.cs" />
     <Compile Include="Extensions\PerlinNoiseExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
@@ -58,9 +57,7 @@
     <Compile Include="Interfaces\IRectangle.cs" />
     <Compile Include="Interfaces\ISize.cs" />
     <Compile Include="Line.cs" />
-    <Compile Include="LineCollection.cs" />
     <Compile Include="Point.cs" />
-    <Compile Include="PointCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Size.cs" />
