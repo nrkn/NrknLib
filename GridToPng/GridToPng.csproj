@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{402DFF9E-3419-442F-B8CC-A2155DEF40A0}</ProjectGuid>
+    <ProjectGuid>{54CCFA6E-AAEA-4986-993C-BD8583C67D98}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NrknLib.Geometry</RootNamespace>
-    <AssemblyName>NrknLib.Geometry</AssemblyName>
+    <RootNamespace>GridToPng</RootNamespace>
+    <AssemblyName>GridToPng</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,41 +33,20 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums.cs" />
-    <Compile Include="Extensions\DrawingExtensions.cs" />
-    <Compile Include="Extensions\GridExtensions.cs" />
-    <Compile Include="Extensions\PerlinNoiseExtensions.cs" />
-    <Compile Include="Extensions\PointExtensions.cs" />
-    <Compile Include="FloodFiller\FloodFillRange.cs" />
-    <Compile Include="FloodFiller\FloodFillRangeQueue.cs" />
-    <Compile Include="FloodFiller\Naive.cs" />
-    <Compile Include="FloodFiller\QueueLinearFloodFiller.cs" />
-    <Compile Include="Interfaces\IGrid.cs" />
-    <Compile Include="Interfaces\ILineCollection.cs" />
-    <Compile Include="Interfaces\IPointCollection.cs" />
-    <Compile Include="Extensions\LineExtensions.cs" />
-    <Compile Include="Grid.cs" />
-    <Compile Include="Interfaces\ILine.cs" />
-    <Compile Include="Interfaces\IPoint.cs" />
-    <Compile Include="Interfaces\IRectangle.cs" />
-    <Compile Include="Interfaces\ISize.cs" />
-    <Compile Include="Line.cs" />
-    <Compile Include="Point.cs" />
+    <Compile Include="GridExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="Size.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Color\Color.csproj">
       <Project>{7FA7717E-05F4-48CD-8518-DFF5C8B26BE4}</Project>
       <Name>Color</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{402DFF9E-3419-442F-B8CC-A2155DEF40A0}</Project>
+      <Name>Geometry</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{42215FA1-D375-40B1-AD31-860198DE94E1}</Project>

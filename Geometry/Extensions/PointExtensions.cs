@@ -9,9 +9,9 @@ namespace NrknLib.Geometry.Extensions {
     public static IPoint Rotate( this IPoint point, double degrees ) {
       var rotatedX = point.X * Math.Cos( degrees.ToRadians() ) - point.Y * Math.Sin( degrees.ToRadians() );
       var rotatedY = point.X * Math.Sin( degrees.ToRadians() ) + point.Y * Math.Cos( degrees.ToRadians() );
-      return ( degrees % 90 == 0 ) ? 
-        new Point( (int) Math.Floor( rotatedX ), (int) Math.Floor( rotatedY ) ) 
-        : new Point( (int) Math.Ceiling( rotatedX ), (int) Math.Ceiling( rotatedY ) );
+      return ( Math.Abs( degrees % 90 - 0 ) < 0.0000001 ) ? 
+        new Point( (int) Math.Floor( rotatedX ), (int) Math.Floor( rotatedY ) ) : 
+        new Point( (int) Math.Ceiling( rotatedX ), (int) Math.Ceiling( rotatedY ) );
     }
 
     public static IPoint Rotate( this IPoint point, double degrees, IPoint pivot ) {
@@ -44,6 +44,10 @@ namespace NrknLib.Geometry.Extensions {
         new Point( point.X - 1, point.Y ),
         new Point( point.X + 1, point.Y )
       };
+    }
+
+    public static IPoint Wrap( this IPoint point, IRectangle bounds ) {
+      return new Point( point.X.Wrap( bounds.Width ), point.Y.Wrap( bounds.Height ) );
     }
   }
 }

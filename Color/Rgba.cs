@@ -11,5 +11,7 @@
     public byte Blue;
     public byte Green;
     public byte Alpha;
+
+    
   }
 }

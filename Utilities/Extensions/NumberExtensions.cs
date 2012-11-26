@@ -20,5 +20,17 @@ namespace NrknLib.Utilities.Extensions {
     public static double ToRadians( this double degrees ) {
       return degrees / 180 * Math.PI;
     }
+
+    public static int Wrap( this int value, int maximum ) {
+      if( value >= maximum ) {
+        return value - maximum;
+      } 
+      
+      if( value < 0 ) {
+        return value + maximum;
+      }
+
+      return value;
+    }
   }
 }

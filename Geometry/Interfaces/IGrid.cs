@@ -21,10 +21,12 @@ namespace NrknLib.Geometry.Interfaces {
     void SetEach( T value );
     void SetEach( Func<T> func );
     void SetEach( Func<T, int, int, T> func );
+    void SetEach( Func<int, int, T> func );
     void SetEach( Func<T, IPoint, T> func );
     void SetEach( Func<T, T> func );
     IGrid<T> Copy( IRectangle rectangle );
     void Paste( IGrid<T> grid, IPoint location );
+    void Paste( IGrid<T> grid, IPoint location, bool wrap );
     IEnumerable<T> Cells { get; set; }
     int LeftmostWhere( IPoint start, Func<T, bool> predicate );
     int RightmostWhere( IPoint start, Func<T, bool> predicate );

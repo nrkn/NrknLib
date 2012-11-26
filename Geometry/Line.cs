@@ -27,6 +27,14 @@ namespace NrknLib.Geometry {
       get { return new[] {Start, End}; }
     }
 
+    public double Length {
+      get {
+        var xDistance = End.X - Start.X;
+        var yDistance = End.Y - Start.Y;
+        return Math.Sqrt( xDistance * xDistance + yDistance * yDistance );
+      }
+    }
+
     public int X1 {
       get { return Start.X; }
       set { Start.X = value; }

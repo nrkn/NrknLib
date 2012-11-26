@@ -99,12 +99,16 @@ public static class StringInjectExtension
 			Hashtable values = null;
 			if (properties != null)
 			{
-				values = new Hashtable();
-				var props = TypeDescriptor.GetProperties(properties);
-				foreach (PropertyDescriptor prop in props)
-				{
-					values.Add(prop.Name, prop.GetValue(properties));
-				}
+        //values = new Hashtable();
+        //var props = TypeDescriptor.GetProperties(properties);
+        //foreach (PropertyDescriptor prop in props) {
+        //  values.Add( prop.Name, prop.GetValue( properties ) );
+        //}
+			  var propDictionary = TypeDescriptor.GetProperties( properties ).Cast<PropertyDescriptor>().ToDictionary( 
+            prop => prop.Name, 
+            prop => prop.GetValue(properties) 
+        );
+        values = new Hashtable( propDictionary );
 			}
 			return values;
 		}

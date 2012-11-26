@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NrknLib.Geometry.Extensions;
 using NrknLib.Geometry.Interfaces;
 using NrknLib.Utilities.Extensions;
 
@@ -43,10 +44,20 @@ namespace NrknLib.Geometry {
       return grid;
     }
 
-    public void Paste( IGrid<T> grid, IPoint location ) {
+    public void Paste( IGrid<T> grid, IPoint location  ) {
+      Paste( grid, location, false );
+    }
+
+    public void Paste( IGrid<T> grid, IPoint location, bool wrap ) {
       grid.ForEach( ( t, p ) => {
         var newPoint = new Point( location.X + p.X, location.Y + p.Y );
-        if( Bounds.InBounds( newPoint ) ) this[ newPoint ] = t;
+        var inBounds = Bounds.InBounds( newPoint );
+        if( !inBounds && !wrap ) return;
+
+        if( !inBounds ) {
+          newPoint = (Point) newPoint.Wrap( Bounds );
+        }
+        this[ newPoint ] = t;
       } );
     }
 
@@ -193,6 +204,18 @@ namespace NrknLib.Geometry {
       for( var y = 0; y < Height; y++ ) {
         for( var x = 0; x < Width; x++ ) {
           this[ x, y ] = func( _grid[ y ][ x ], new Point( x, y ) );
+        }
+      }
+    }
+
+    /// <summary>
+    /// Set each cell of the grid
+    /// </summary>
+    /// <param name="func">T Func( T currentValue, int x, int y )</param>
+    public void SetEach( Func<int, int, T> func ) {
+      for( var y = 0; y < Height; y++ ) {
+        for( var x = 0; x < Width; x++ ) {
+          this[ x, y ] = func( x, y );
         }
       }
     }
